@@ -6,23 +6,26 @@
  |_|\_\_| \_/\_/ |_|
 
 ------------------------
-kiwi v0.0.3
+kiwi v0.0.4
 written by ori yonay
 ------------------------
 
 current features:
- - autodiff
- - accuracy score
  - linear regression
  - logistic regression
  - single dimensional analysis
  - perceptron
- - PCA
+ - naive bayes
  - KNN
+ - autodiff
+ - accuracy score
+ - PCA
+ - train_test_split
+ - plot_cost_history
 
 TODO:
+ - add laplace smoothing to naive bayes model
  - Error: add mean absolute deviation
- - Naive Bayes
  - SVM
  - Decision Tree
  - Random Forest
@@ -40,6 +43,7 @@ TODO:
 
 import heapq # for KNN
 import numpy as np
+import random # for Utils.train_test_split
 
 ##### UTILITY FUNCTIONS #####
 class Utils:
@@ -49,6 +53,34 @@ class Utils:
       raise Exception('(accuracy_score) error: length of y_true and pred must be equal.')
 
     return np.sum(y_true == pred) / len(y_true)
+
+  def train_test_split(X, y, test_size=0.2):
+    # calculate the holdout (index at which to split train/test data):
+    holdout = int(test_size * len(X))
+
+    # append the y-values to X:
+    data = np.append(X, y[:, np.newaxis], axis=1)
+
+    # split data into training and testing sets at random:
+    random.shuffle(data)
+    train = data[holdout:]
+    test = data[:holdout]
+
+    # split training and testing data into examples and labels:
+    X_train = np.array([row[:-1] for row in train])
+    y_train = np.array([row[-1] for row in train])
+    X_test = np.array([row[:-1] for row in test])
+    y_test = np.array([row[-1] for row in test])
+
+    return X_train, X_test, y_train, y_test
+
+  def plot_cost_history(model, **kwargs):
+    # check if the model contains a cost history list:
+    if hasattr(model, 'cost_history'):
+      import matplotlib.pyplot as plt
+      plt.plot(range(len(model.cost_history)), model.cost_history, **kwargs)
+    else:
+      raise Exception('(plot_cost_history): error: no cost history list found in model.')
 
   def PCA(X):
     means = np.mean(X.T, axis=1)
@@ -99,9 +131,9 @@ class KNN:
   def __init__(self, n_neighbors=3, error_function='l2'):
     self.n_neighbors = n_neighbors
 
-    if error_function not in Errors.error_functions:
+    if error_function not in Error.error_functions:
       raise Exception('(KNN) error: error function %s not found.' % error_function)
-    self.error_function = Errors.error_functions[error_function]
+    self.error_function = Error.error_functions[error_function]
 
   def fit(self, X, y):
     self.X = X
@@ -142,7 +174,7 @@ class LinearRegressor:
     self.y = y
     self.m, self.n = self.X.shape
     self.n_iters = n_iters
-    self.w = rng.rand(self.n)
+    self.w = np.random.RandomState(1).rand(self.n) # np.random.RandomState(1) is a random number generator
     self.b = 0
 
     # gradient descent:
@@ -195,6 +227,54 @@ class LogisticRegressor:
     if self.normalize:
       x_copy = (x - self.X_mu) / self.X_sigma
     return np.round(Utils.sigmoid((x_copy @ self.w) + self.b))
+
+##### NAIVE BAYES #####
+class NaiveBayes:
+  def __init__(self):
+    pass
+
+  def fit(self, X, y):
+    # setup:
+    self.m, self.n = X.shape
+    self.classes = np.unique(y)
+    self.n_classes = len(self.classes)
+
+    # calculate means, variances, and priors for each class:
+    # note: priors = frequency of every class in our example set
+    self.mu = np.zeros((self.n_classes, self.n), dtype=np.float64)
+    self.var = np.zeros((self.n_classes, self.n), dtype=np.float64)
+    self.priors = np.zeros(self.n_classes, dtype=np.float64)
+    self.log_priors = np.zeros(self.n_classes, dtype=np.float64)
+
+    for idx, c in enumerate(self.classes):
+      X_c = X[y == c] # all examples of class c
+      self.mu[idx, :] = X_c.mean(axis=0)
+      self.var[idx, :] = X_c.var(axis=0)
+      self.priors[idx] = len(X_c) / float(self.m)
+      self.log_priors[idx] = np.log(self.priors[idx])
+
+    return self
+
+  def predict(self, X):
+    pred = []
+    for p in X:
+      # calculate the conditional probabilities for each class:
+      posteriors = []
+      for idx, c in enumerate(self.classes):
+        log_prior = self.log_priors[idx]
+        class_conditional = np.sum(np.log(self._pdf(idx, p)))
+        posterior = log_prior + class_conditional
+        posteriors.append(posterior)
+
+      # predict the class with the highest probability:
+      pred.append(self.classes[np.argmax(posteriors)])
+
+    return np.array(pred)
+
+  def _pdf(self, class_idx, x):
+    class_mu = self.mu[class_idx]
+    class_var = self.var[class_idx]
+    return np.exp(-(x - class_mu)**2 / (2 * class_var)) / np.sqrt(2 * np.pi * class_var)
 
 ##### PERCEPTRON #####
 class Perceptron:
@@ -302,13 +382,13 @@ class SDA:
     return self
 
   def predict(self, X):
-    pred = np.array([], dtype=np.int8)
+    pred = []
     for p in X:
       weighted_sum = 0
       for x, b in zip(p, self.model):
         if (x > b[0] and b[2]) or (x < b[0] and not b[2]):
           weighted_sum += b[1]
 
-      pred = np.append(pred, round(weighted_sum))
+      pred.append(round(weighted_sum))
 
-    return pred
+    return np.array(pred, dtype=np.int8)

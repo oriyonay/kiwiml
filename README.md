@@ -1,4 +1,4 @@
-# kiwi v0.0.3
+# kiwi v0.0.4
 A tiny, simple, instructional machine learning library in python, written by Ori Yonay.
 
 To install:
@@ -6,14 +6,18 @@ To install:
 
 Current Features:
 * autodiff: A simple automatic numpy-compatible multidimensional differentiator
-* Accuracy score function for calculating model accuracy
 * Machine Learning Models:
+  * KNN
   * Linear Regression
   * Logistic Regression
-  * Single Dimensional Analysis
+  * Naive Bayes
   * Perceptron
-  * KNN
-* PCA Decomposition
+  * Single Dimensional Analysis
+* Utilities:
+  * Accuracy score function for calculating model accuracy
+  * train_test_split
+  * A function to plot cost histories
+  * PCA Decomposition (will be in its own dimensionality reduction class in the future)
 * Error Functions:
   * Mean-Squared Error
   * Cross-Entropy Loss
@@ -21,7 +25,6 @@ Current Features:
 TODO:
 * Error Functions: add mean absolute deviation
 * Machine Learning Models:
-  * Naive Bayes
   * SVM
   * Decision Tree
   * Random Forest
