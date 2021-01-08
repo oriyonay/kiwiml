@@ -43,10 +43,10 @@ TODO:
 
 import heapq # for KNN
 import numpy as np
-import random # for Utils.train_test_split
+import random # for utils.train_test_split
 
 ##### UTILITY FUNCTIONS #####
-class Utils:
+class utils:
   def accuracy_score(y_true, pred):
     # make sure the lengths are the same:
     if len(y_true) != len(pred):
@@ -106,7 +106,7 @@ class Utils:
     return np.sqrt(np.sum((a - b)**2))
 
 ##### ERROR FUNCTIONS #####
-class Error:
+class error:
   def MSE(X, y, predicted):
     # X not necessary as a parameter but left to keep things consistent with MSE_gradient
     return np.sum((predicted - y)**2) / (len(y))
@@ -124,16 +124,16 @@ class Error:
   def cross_entropy_gradient(X, y, predicted):
     return (X.T @ (predicted - y)) / len(y)
 
-  error_functions = {'l2' : Utils.l2_norm}
+  error_functions = {'l2' : utils.l2_norm}
 
 ##### K-NEAREST-NEIGHBORS #####
 class KNN:
   def __init__(self, n_neighbors=3, error_function='l2'):
     self.n_neighbors = n_neighbors
 
-    if error_function not in Error.error_functions:
+    if error_function not in error.error_functions:
       raise Exception('(KNN) error: error function %s not found.' % error_function)
-    self.error_function = Error.error_functions[error_function]
+    self.error_function = error.error_functions[error_function]
 
   def fit(self, X, y):
     self.X = X
@@ -166,7 +166,7 @@ class LinearRegressor:
 
   def fit(self, X, y, learning_rate=0.01, n_iters=50):
     if self.normalize:
-      self.X, self.X_mu, self.X_sigma = Utils.standardize_data(X)
+      self.X, self.X_mu, self.X_sigma = utils.standardize_data(X)
     else:
       self.X = X
 
@@ -181,9 +181,9 @@ class LinearRegressor:
     self.cost_history = []
     for _ in range(self.n_iters):
       predicted = self.predict(X)
-      self.w -= self.learning_rate * Error.MSE_gradient(self.X, self.y, predicted)
-      self.b -= self.learning_rate * np.sum(Error.MSE_gradient(np.ones(self.m), self.y, predicted))
-      self.cost_history.append(Error.MSE(self.X, self.y, predicted))
+      self.w -= self.learning_rate * error.MSE_gradient(self.X, self.y, predicted)
+      self.b -= self.learning_rate * np.sum(error.MSE_gradient(np.ones(self.m), self.y, predicted))
+      self.cost_history.append(error.MSE(self.X, self.y, predicted))
 
     # return a pointer to itself for syntactic sugar like lr = LinearRegressor().fit(X, y):
     return self
@@ -202,7 +202,7 @@ class LogisticRegressor:
 
   def fit(self, X, y, learning_rate=0.01, n_iters=50):
     if self.normalize:
-      self.X, self.X_mu, self.X_sigma = Utils.standardize_data(X)
+      self.X, self.X_mu, self.X_sigma = utils.standardize_data(X)
     else:
       self.X = X
 
@@ -214,9 +214,9 @@ class LogisticRegressor:
 
     self.cost_history = []
     for _ in range(n_iters):
-      predicted = Utils.sigmoid((self.X @ self.w) + self.b)
-      self.w -= self.learning_rate * Error.cross_entropy_gradient(self.X, self.y, predicted)
-      self.b -= self.learning_rate * np.sum(Error.cross_entropy_gradient(np.ones(self.m), self.y, predicted))
+      predicted = utils.sigmoid((self.X @ self.w) + self.b)
+      self.w -= self.learning_rate * error.cross_entropy_gradient(self.X, self.y, predicted)
+      self.b -= self.learning_rate * np.sum(error.cross_entropy_gradient(np.ones(self.m), self.y, predicted))
       self.cost_history.append(Error.cross_entropy(self.y, predicted))
 
     return self
@@ -226,7 +226,7 @@ class LogisticRegressor:
     # in the same way we did the training data:
     if self.normalize:
       x_copy = (x - self.X_mu) / self.X_sigma
-    return np.round(Utils.sigmoid((x_copy @ self.w) + self.b))
+    return np.round(utils.sigmoid((x_copy @ self.w) + self.b))
 
 ##### NAIVE BAYES #####
 class NaiveBayes:
@@ -283,7 +283,7 @@ class Perceptron:
 
   def fit(self, X, y, learning_rate=0.01, n_iters=50):
     if self.normalize:
-      self.X, self.X_mu, self.X_sigma = Utils.standardize_data(X)
+      self.X, self.X_mu, self.X_sigma = utils.standardize_data(X)
     else:
       self.X = X
 
@@ -298,7 +298,7 @@ class Perceptron:
 
     self.cost_history = []
     for _ in range(n_iters):
-      predicted = Utils.step((self.X @ self.w) + self.b)
+      predicted = utils.step((self.X @ self.w) + self.b)
       self.w -= self.learning_rate * (predicted - y_) @ X
       self.b -= self.learning_rate * (np.sum(predicted - y_) / self.m)
 
@@ -312,7 +312,7 @@ class Perceptron:
     # in the same way we did the training data:
     if self.normalize:
       x_copy = (x - self.X_mu) / self.X_sigma
-    return Utils.step((x_copy @ self.w) + self.b)
+    return utils.step((x_copy @ self.w) + self.b)
 
 ##### SINGLE DIMENSIONAL ANALYSIS #####
 """

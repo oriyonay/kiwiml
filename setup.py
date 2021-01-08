@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="kiwiml",
-    version="0.0.4",
+    version="0.0.5",
     author="Ori Yonay",
     author_email="oriyonay12@gmail.com",
     description="a tiny, simple, instructional machine learning library in python",
