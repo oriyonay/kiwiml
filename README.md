@@ -1,4 +1,4 @@
-# kiwi v0.0.4
+# kiwi v0.0.5
 A tiny, simple, instructional machine learning library in python, written by Ori Yonay.
 
 To install:
@@ -21,6 +21,10 @@ Current Features:
 * Error Functions:
   * Mean-Squared Error
   * Cross-Entropy Loss
+* Dataset Loaders:
+  * Boston dataset
+  * Breast cancer dataset
+  * MNIST dataset
 
 TODO:
 * Error Functions: add mean absolute deviation
@@ -34,5 +38,5 @@ TODO:
      * Convolutional Layer
      * Residual Layer
      * ...
-* Dataset Importer
+* More dataset importers
 * Autolearn

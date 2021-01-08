@@ -6,7 +6,7 @@
  |_|\_\_| \_/\_/ |_|
 
 ------------------------
-kiwi v0.0.4
+kiwi v0.0.5
 written by ori yonay
 ------------------------
 
@@ -22,6 +22,7 @@ current features:
  - PCA
  - train_test_split
  - plot_cost_history
+ - dataset importer (boston, breast cancer, MNIST)
 
 TODO:
  - add laplace smoothing to naive bayes model
@@ -34,7 +35,6 @@ TODO:
      - fully-connected layer
      - convolutional layer
      - residual layer? idk
- - Dataset Importer (from online)
  - Error functions:
      - MAD
  - Autolearn
