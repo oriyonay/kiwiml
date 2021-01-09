@@ -24,10 +24,13 @@ Current Features:
 * Dataset Loaders:
   * Boston dataset
   * Breast cancer dataset
+  * Iris dataset
   * MNIST dataset
 
 TODO:
-* Error Functions: add mean absolute deviation
+* Error Functions:
+  * Add mean absolute deviation
+  * Change error functions to take parameters (w, X, predicted) instead of (X, y, predicted) so can be differentiated with autodiff
 * Machine Learning Models:
   * SVM
   * Decision Tree

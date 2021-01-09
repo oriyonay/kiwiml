@@ -10,6 +10,10 @@ DATASET_INFO = {
         'URL' : 'https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data',
         'TARGET_VALUES' : {'M': 0, 'B': 1}
     },
+    'IRIS' : {
+        'URL' : 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data',
+        'TARGET_VALUES' : {'Iris-setosa': 0, 'Iris-versicolor': 1, 'Iris-virginica': 2}
+    },
     'MNIST' : {
         'X_TRAIN_URL' : 'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
         'X_TEST_URL' : 'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
@@ -17,36 +21,6 @@ DATASET_INFO = {
         'Y_TEST_URL' : 'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz'
     }
 }
-
-##### LOAD THE MNIST DATASET #####
-def load_digits():
-  import gzip
-
-  # to make the code less messy and more readable:
-  X_TRAIN_URL = DATASET_INFO['MNIST']['X_TRAIN_URL']
-  X_TEST_URL = DATASET_INFO['MNIST']['X_TEST_URL']
-  Y_TRAIN_URL = DATASET_INFO['MNIST']['Y_TRAIN_URL']
-  Y_TEST_URL = DATASET_INFO['MNIST']['Y_TEST_URL']
-
-  # initialize the arrays:
-  X_train = []
-  X_test = []
-  y_train = []
-  y_test = []
-
-  # fetch and decompress the data:
-  def fetch_data(url):
-    data = requests.get(url).content
-    return np.frombuffer(gzip.decompress(data), dtype=np.uint8).copy()
-
-  # reshape and process the data:
-  X_train = fetch_data(X_TRAIN_URL)[0x10:].reshape((-1, 28, 28))
-  X_test = fetch_data(X_TEST_URL)[0x10:].reshape((-1, 28, 28))
-  y_train = fetch_data(Y_TRAIN_URL)[8:]
-  y_test = fetch_data(Y_TEST_URL)[8:]
-
-  # merge the training and testing data and return them:
-  return np.append(X_train, X_test, axis=0), np.append(y_train, y_test)
 
 ##### LOAD THE BOSTON DATASET #####
 def load_boston():
@@ -88,5 +62,59 @@ def load_breast_cancer():
 
   X = np.array(X).reshape(-1, 30)
   y = np.array(y)
+
+  return X, y
+
+##### LOAD THE MNIST DATASET #####
+def load_digits():
+  import gzip
+
+  # to make the code less messy and more readable:
+  X_TRAIN_URL = DATASET_INFO['MNIST']['X_TRAIN_URL']
+  X_TEST_URL = DATASET_INFO['MNIST']['X_TEST_URL']
+  Y_TRAIN_URL = DATASET_INFO['MNIST']['Y_TRAIN_URL']
+  Y_TEST_URL = DATASET_INFO['MNIST']['Y_TEST_URL']
+
+  # initialize the arrays:
+  X_train = []
+  X_test = []
+  y_train = []
+  y_test = []
+
+  # fetch and decompress the data:
+  def fetch_data(url):
+    data = requests.get(url).content
+    return np.frombuffer(gzip.decompress(data), dtype=np.uint8).copy()
+
+  # reshape and process the data:
+  X_train = fetch_data(X_TRAIN_URL)[0x10:].reshape((-1, 28, 28))
+  X_test = fetch_data(X_TEST_URL)[0x10:].reshape((-1, 28, 28))
+  y_train = fetch_data(Y_TRAIN_URL)[8:]
+  y_test = fetch_data(Y_TEST_URL)[8:]
+
+  # merge the training and testing data and return them:
+  return np.append(X_train, X_test, axis=0), np.append(y_train, y_test)
+
+def load_iris():
+  IRIS_URL = DATASET_INFO['IRIS']['URL']
+  TARGET_VALUES = DATASET_INFO['IRIS']['TARGET_VALUES']
+
+  # fetch the data and format it:
+  data = requests.get(IRIS_URL).content
+  data = str(data)[2:].split('\\n')
+  data.pop() # remove last 2 'elements' (just whitespaces)
+  data.pop()
+
+  # parse the data:
+  X = []
+  y = []
+  for datapoint in data:
+      datapoint = datapoint.split(',')
+      y.append(TARGET_VALUES[datapoint.pop()])
+      datapoint = [np.float64(i) for i in datapoint]
+      X.append(datapoint)
+
+  X = np.array(X, dtype=np.float64)
+  y = np.array(y, dtype=np.int64)
 
   return X, y

@@ -33,6 +33,17 @@ def load_breast_cancer_test():
 
   print('Breast cancer dataset loader passed.')
 
+def load_iris_test():
+  from sklearn.datasets import load_iris as sklearn_li
+
+  X, y = sklearn_li(return_X_y=True)
+  X_kiwi, y_kiwi = load_iris()
+
+  assert (sum(sum(X - X_kiwi)) < 1) # the UCI dataset has been updated (errata) so we test for similarity instead.
+  assert np.array_equal(y, y_kiwi)
+
+  print('Iris dataset loader passed.')
+
 ##### TEST ALL DATASET LOADERS #####
 def test_all_loaders():
   # test the boston dataset loader:
@@ -40,6 +51,9 @@ def test_all_loaders():
 
   # test the breast cancer loader:
   load_breast_cancer_test()
+
+  # test the iris dataset loader:
+  load_iris_test()
 
   # NOTE: no test for MNIST loader.
 
