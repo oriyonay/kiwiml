@@ -1,18 +1,17 @@
 # kiwi v0.0.5
-A tiny, simple, instructional machine learning library in python, written by Ori Yonay.
+A tiny, simple, instructional machine learning library in python, written by Ori Yonay. Mostly written as a personal reference for classic ML algorithms. Follows similar syntax to sklearn :)
 
 To install:
 `pip3 install kiwiml`
 
 Current Features:
-* autodiff: A simple automatic numpy-compatible multidimensional differentiator
 * Machine Learning Models:
   * KNN
   * Linear Regression
   * Logistic Regression
   * Naive Bayes
   * Perceptron
-  * Single Dimensional Analysis
+  * Single Dimensional Analysis (experimental)
 * Utilities:
   * Accuracy score function for calculating model accuracy
   * train_test_split
@@ -39,7 +38,6 @@ TODO:
   * Neural Network Library
      * Fully-Connected layer
      * Convolutional Layer
-     * Residual Layer
      * ...
 * More dataset importers
-* Autolearn
+* Automatic learning
